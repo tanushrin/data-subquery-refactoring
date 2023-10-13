@@ -2,7 +2,21 @@
 
 def get_average_purchase(db):
     # return the average amount spent per order for each customer ordered by customer ID
-    pass  # YOUR CODE HERE
+    query = "WITH Order_Amounts AS (\
+          SELECT SUM(od.UnitPrice * od.Quantity) AS amount, od.OrderID\
+          FROM OrderDetails od\
+          GROUP BY od.OrderID)\
+        SELECT c.CustomerID,\
+        ROUND(AVG(ov.amount), 2) AS average\
+        FROM Customers c\
+        JOIN Orders o ON c.CustomerID = o.CustomerID\
+        JOIN Order_Amounts ov ON ov.OrderID = o.OrderID\
+        GROUP BY c.CustomerID\
+        ORDER BY c.CustomerID"
+
+    db.execute(query)
+    results = db.fetchall()
+    return results
 
 def get_general_avg_order(db):
     # return the average amount spent per order
